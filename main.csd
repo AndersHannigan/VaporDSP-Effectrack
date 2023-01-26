@@ -1,5 +1,5 @@
 <Cabbage> bounds(0, 0, 0, 0)
-form caption("Vapor FXs") size(950, 900), colour(58, 110, 182), pluginId("4159")
+form caption("Vapor FXs") size(950, 900), colour(58, 110, 182), guiMode("queue"), pluginId("4159")
 image file("FXBackground.png") bounds(0, 0, 950, 900)
 
 
@@ -141,7 +141,7 @@ endop
 
 ;-----------------INPUT-----------------
 instr INPUT ;Denne pluginen er mono --> stereo
-kGain chnget "gain"
+kGain cabbageGetValue "gain"
 aIn inch 1
 gaIn += aIn*kGain
 endin
@@ -153,9 +153,9 @@ instr CHORUS
 
 ain = gaIn
 
-if chnget:k("chorusInput") == 1 then ;Direct input av, altså bare sends
+if cabbageGetValue:k("chorusInput") == 1 then ;Direct input av, altså bare sends
     ain = 0
-elseif chnget:k("chorusInput") == 3 then ;Bare direct , altså ingorer sends
+elseif cabbageGetValue:k("chorusInput") == 3 then ;Bare direct , altså ingorer sends
     gaToChorusL = 0
     gaToChorusR = 0
 endif
@@ -173,8 +173,8 @@ aDelL vdelay achorusmixL, aLfo, 100 ;Forsinker signalet baser på LFOen i millis
 aDelR vdelay achorusmixR, aLfo, 100
 
 ;Ganges med 0 hvis chorus toggle er av
-gaChorusL += (aDelL+achorusmixL)*chnget:k("chorusvol")*chnget:k("chorustoggle")
-gaChorusR += (aDelR+achorusmixR)*chnget:k("chorusvol")*chnget:k("chorustoggle")
+gaChorusL += (aDelL+achorusmixL)*cabbageGetValue:k("chorusvol")*cabbageGetValue:k("chorustoggle")
+gaChorusR += (aDelR+achorusmixR)*cabbageGetValue:k("chorusvol")*cabbageGetValue:k("chorustoggle")
 
 
 
@@ -182,7 +182,7 @@ endin
 
 ;-----------------FLANGER----------------
 instr FLANGER
-kVolum chnget "flangervol"
+kVolum cabbageGetValue "flangervol"
 aFeedL init 0
 aFeedR init 0
 
@@ -194,9 +194,9 @@ aLfo += 5
 
 ain = gaIn
 
-if chnget:k("flangerInput") == 1 then ;Direct input av, altså bare sends
+if cabbageGetValue:k("flangerInput") == 1 then ;Direct input av, altså bare sends
     ain = 0
-elseif chnget:k("flangerInput") == 3 then ;Bare direct, altså ingorer sends
+elseif cabbageGetValue:k("flangerInput") == 3 then ;Bare direct, altså ingorer sends
     gaToFlangerL = 0
     gaToFlangerR = 0
 endif
@@ -216,8 +216,8 @@ aFeedR *= 0.6
 
 
 
-gaFlangerL += (aDelL+aflangermixL)*kVolum*chnget:k("flangertoggle")
-gaFlangerR += (aDelR+aflangermixR)*kVolum*chnget:k("flangertoggle")
+gaFlangerL += (aDelL+aflangermixL)*kVolum*cabbageGetValue:k("flangertoggle")
+gaFlangerR += (aDelR+aflangermixR)*kVolum*cabbageGetValue:k("flangertoggle")
 
 endin
 
@@ -225,9 +225,9 @@ endin
 instr FILTER
 ain = gaIn
 
-if chnget:k("filterInput") == 1 then ;Direct input av, altså bare sends
+if cabbageGetValue:k("filterInput") == 1 then ;Direct input av, altså bare sends
     ain = 0
-elseif chnget:k("filterInput") == 3 then ;Bare direct, altså ingorer sends
+elseif cabbageGetValue:k("filterInput") == 3 then ;Bare direct, altså ingorer sends
     gaToFilterL = 0
     gaToFilterR = 0
 endif
@@ -236,28 +236,28 @@ afiltermixL = ain + gaToFilterL ;Blander send signal og direct input
 afiltermixR = ain + gaToFilterR
 
 
-aFiltL moogladder afiltermixL, chnget:k("filterfreq"), chnget:k("filterres") ;Filtrerer signalet basert på oppgitte verdier
-aFiltR moogladder afiltermixR, chnget:k("filterfreq"), chnget:k("filterres")
+aFiltL moogladder afiltermixL, cabbageGetValue:k("filterfreq"), cabbageGetValue:k("filterres") ;Filtrerer signalet basert på oppgitte verdier
+aFiltR moogladder afiltermixR, cabbageGetValue:k("filterfreq"), cabbageGetValue:k("filterres")
 
 
-gaFilterL += aFiltL*chnget:k("filtertoggle")
-gaFilterR += aFiltR*chnget:k("filtertoggle")
+gaFilterL += aFiltL*cabbageGetValue:k("filtertoggle")
+gaFilterR += aFiltR*cabbageGetValue:k("filtertoggle")
 
 endin
 
 ;-------------STEREO--DELAY--------------
 
 instr DELAY
-kVol  chnget  "delayvol"
-kFeed  chnget "delfeed"
-kTimeL chnget "deltimeL"
-kTimeR chnget "deltimeR"
+kVol  cabbageGetValue  "delayvol"
+kFeed  cabbageGetValue "delfeed"
+kTimeL cabbageGetValue "deltimeL"
+kTimeR cabbageGetValue "deltimeR"
 
 ain = gaIn
 
-if chnget:k("delayInput") == 1 then ;Direct input av, altså bare sends
+if cabbageGetValue:k("delayInput") == 1 then ;Direct input av, altså bare sends
     ain = 0
-elseif chnget:k("delayInput") == 3 then ;Bare direct, altså ingorer sends
+elseif cabbageGetValue:k("delayInput") == 3 then ;Bare direct, altså ingorer sends
     gaToDelayL = 0
     gaToDelayR = 0
 endif
@@ -266,8 +266,8 @@ aInL = ain + gaToDelayL ;Blander send signal og direct input
 aInR = ain + gaToDelayR
 
 aDelayL, aDelayR stdelay aInL, aInR, kVol, kFeed, kTimeL, kTimeR ;Bruker egen stereo-delay opkode
-gaDelayL += aDelayL*chnget:k("delaytoggle")
-gaDelayR += aDelayR*chnget:k("delaytoggle")
+gaDelayL += aDelayL*cabbageGetValue:k("delaytoggle")
+gaDelayR += aDelayR*cabbageGetValue:k("delaytoggle")
 endin
 
 
@@ -275,9 +275,9 @@ endin
 instr REVERB
 ain = gaIn
 
-if chnget:k("reverbInput") == 1 then ;Direct input av, altså bare sends
+if cabbageGetValue:k("reverbInput") == 1 then ;Direct input av, altså bare sends
     ain = 0
-elseif chnget:k("reverbInput") == 3 then ;Bare direct, altså ingorer sends
+elseif cabbageGetValue:k("reverbInput") == 3 then ;Bare direct, altså ingorer sends
     gaToReverbL = 0
     gaToReverbR = 0
 endif
@@ -286,9 +286,9 @@ averbmixL = ain + gaToReverbL ;Blander send signal og direct input
 averbmixR = ain + gaToReverbR
 
 
-aL, aR reverbsc averbmixL, averbmixR, chnget:k("reverbsize"), chnget:k("reverbcut") ;Reverb basert på oppgitte verdier
-gaReverbL += aL*chnget:k("reverbvol")*chnget:k("reverbtoggle")
-gaReverbR += aR*chnget:k("reverbvol")*chnget:k("reverbtoggle")
+aL, aR reverbsc averbmixL, averbmixR, cabbageGetValue:k("reverbsize"), cabbageGetValue:k("reverbcut") ;Reverb basert på oppgitte verdier
+gaReverbL += aL*cabbageGetValue:k("reverbvol")*cabbageGetValue:k("reverbtoggle")
+gaReverbR += aR*cabbageGetValue:k("reverbvol")*cabbageGetValue:k("reverbtoggle")
 
 endin
 
@@ -327,7 +327,7 @@ aToDelayR   init 0
 
 ;---Chorus sends
 ;1 = Flanger, 2 = Filter, 3 = Delay, 4 = Reverb, 5 = Master
-kSend1 chnget "chorussend"
+kSend1 cabbageGetValue "chorussend"
 
 if kSend1 == 1 then ;Hvis "send til flanger" er valgt så legges chorus-signalet på send-input kanalen til flanger effekten (altså gaToflanger)
     aToFlangerL += gaChorusL
@@ -348,7 +348,7 @@ endif
 
 ;---Flanger sends
 ;1 = Chorus, 2 = Filter, 3 = Delay, 4 = Reverb, 5 = Master
-kSend2 chnget "flangersend"
+kSend2 cabbageGetValue "flangersend"
 
 if kSend2 == 1 then
     aToChorusL += gaFlangerL
@@ -368,7 +368,7 @@ elseif kSend2 == 5 then
 endif
 ;---Filterns sends
 ;1 = Chorus, 2 = Flanger, 3 = Delay, 4 = Reverb, 5 = Master
-kSend3 chnget "filtersend"
+kSend3 cabbageGetValue "filtersend"
 
 if kSend3 == 1 then
     aToChorusL += gaFilterL
@@ -390,7 +390,7 @@ endif
 ;---Delay sends
 ;1 = Chorus, 2 = Flanger, 3 = Filter, 4 = Reverb, 5 = Master
 
-kSend4 chnget "delaysend"
+kSend4 cabbageGetValue "delaysend"
 if kSend4 == 1 then
     aToChorusL  += gaDelayL
     aToChorusR  += gaDelayR
@@ -410,7 +410,7 @@ endif
 
 ;---Reverb sends
 ;1 = Chorus, 2 = Flanger, 3 = Filter, 4 = Delay, 5 = Master
-kSend5 chnget "reverbsend"
+kSend5 cabbageGetValue "reverbsend"
 if kSend5 == 1 then
     aToChorusL  += gaReverbL
     aToChorusR  += gaReverbR
@@ -449,7 +449,7 @@ endin
 ;---------------MASTER--MIX--------------
 instr MASTER
 
-kwet chnget "drywet" ;Master drywet, gjør at det våte og tørre kontrolleres med en skruknott
+kwet cabbageGetValue "drywet" ;Master drywet, gjør at det våte og tørre kontrolleres med en skruknott
 kdry = 1-kwet
 
 
@@ -457,13 +457,13 @@ aMiksL = gaIn*kdry + gaMasterL*kwet
 aMiksR = gaIn*kdry + gaMasterR *kwet
 
 ;PAN-SYSTEM
-kPanL chnget "panL"
-kPanR chnget "panR"
+kPanL cabbageGetValue "panL"
+kPanR cabbageGetValue "panR"
 
 
 ;Pan og autopan, oppfører seg litt rart med tanke på at man autopanner to kanaler, funkerer best hvis man flytter begge kanalene til høyre (altså slår sammen til mono)
-if chnget:k("autopantoggle") == 1 then
-    kPanoscil oscil 1, (chnget:k("autopanspeed")*3)
+if cabbageGetValue:k("autopantoggle") == 1 then
+    kPanoscil oscil 1, (cabbageGetValue:k("autopanspeed")*3)
     kPanoscil = (kPanoscil+1)/2 
  else
     kPanoscil = 1
@@ -474,7 +474,7 @@ a3, a4 pan2 aMiksR, kPanR*kPanoscil
 
 
 
-outs (a1+a3)*chnget:k("mastervol"), (a2+a4)*chnget:k("mastervol")
+outs (a1+a3)*cabbageGetValue:k("mastervol"), (a2+a4)*cabbageGetValue:k("mastervol")
 clear gaIn, gaMasterL, gaMasterR, gaChorusL, gaChorusR, gaFlangerL, gaFlangerR, gaFilterL, gaFilterR, gaDelayL, gaDelayR, gaReverbL, gaReverbR ;Clearer globale lydvaribaler for å unngå feedback
 endin
 
